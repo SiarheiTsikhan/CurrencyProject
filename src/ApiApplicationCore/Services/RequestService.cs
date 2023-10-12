@@ -3,15 +3,10 @@ using ApiApplicationCore.Interfaces;
 using ApiApplicationCore.Models;
 using Flurl;
 using Flurl.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApiApplicationCore.Services
 {
-    public class RequestService: IRequestService
+    public class RequestService : IRequestService
     {
         public async Task<CurrencyLayerResponse> SearchAsync(string currencyName)
         {
