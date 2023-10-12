@@ -7,29 +7,37 @@ namespace ApiApplicationCore.Modules
     {
         public static List<ExchangeRate> MergeData(CurrencyLayerResponse responseEUR, CurrencyLayerResponse responseUSD)
         {
-            var exchangeRates = new List<ExchangeRate>();
-
-            foreach (var quotePairEUR in responseEUR.Quotes)
+            try
             {
-                var currencyPairEUR = quotePairEUR.Key;
-                var baseCurrency = currencyPairEUR.Substring(3);
+                var exchangeRates = new List<ExchangeRate>();
 
-                if (responseUSD.Quotes.TryGetValue($"USD{baseCurrency}", out var quoteUSD))
+                foreach (var quotePairEUR in responseEUR.Quotes)
                 {
-                    var exchangeRate = new ExchangeRate
+                    var currencyPairEUR = quotePairEUR.Key;
+                    var baseCurrency = currencyPairEUR.Substring(3);
+
+                    if (responseUSD.Quotes.TryGetValue($"USD{baseCurrency}", out var quoteUSD))
                     {
-                        ExchangeRateToEUR = quotePairEUR.Value.EndRate,
-                        ExchangeRateToUSD = quoteUSD.EndRate,
-                        PercentageChangeToUSD = quoteUSD.ChangePercentage,
-                        PercentageChangeToEUR = quotePairEUR.Value.ChangePercentage,
-                        Currency = new Currency { CurrencyCode = baseCurrency }
-                    };
+                        var exchangeRate = new ExchangeRate
+                        {
+                            ExchangeRateToEUR = quotePairEUR.Value.EndRate,
+                            ExchangeRateToUSD = quoteUSD.EndRate,
+                            PercentageChangeToUSD = quoteUSD.ChangePercentage,
+                            PercentageChangeToEUR = quotePairEUR.Value.ChangePercentage,
+                            Currency = new Currency { CurrencyCode = baseCurrency }
+                        };
 
-                    exchangeRates.Add(exchangeRate);
+                        exchangeRates.Add(exchangeRate);
+                    }
                 }
-            }
 
-            return exchangeRates;
+                return exchangeRates;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred during data merging: " + ex.Message);
+                return new List<ExchangeRate>();
+            }
         }
     }
 }
